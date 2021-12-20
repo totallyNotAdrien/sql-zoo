@@ -93,57 +93,25 @@ join stops as stopb
 on b.stop = stopb.id
 where stopa.name = 'Craiglockhart';
 
-/**/
+/*10.
+Find the routes involving two buses that can go from Craiglockhart to Lochend.
+Show the bus no. and company for the first bus, the name of the stop for the transfer,
+and the bus no. and company for the second bus.
 
-
-/**/
-
-
-
-
-/**/
-
-
-/**/
-
-
-/**/
-
-
-/**/
-select distinct a.num, a.company, (select name from stops where id = b.stop), d.num, d.company
+Hint
+Self-join twice to find buses that visit Craiglockhart and Lochend, then join those on matching stops.*/
+select distinct a.num, a.company, (select name from stops where id = b.stop) as stopname, bus2.num, bus2.company
 from route as a
 join route as b
-on a.stop = (select id from stops where name = 'Craiglockhart')
-join route as c
-on c.stop = (select id from stops where name = 'Lochend')
-join route as d
-on b.stop = d.stop
-order by a.company, a.num
-
-/**/
-
-
-/**/
-
-
-/**/
-
-
-/**/
-
-
-/**/
-
-
-/**/
-
-
-/**/
-
-
-/**/
-
-
-/**/
+on a.company = b.company 
+and a.num = b.num 
+and a.stop = (select id from stops where name = 'Craiglockhart')
+join (
+  select c.stop as stop1, d.num, d.company 
+  from route as c 
+  join route as d 
+  on c.company = d.company and c.num = d.num
+  and d.stop = (select id from stops where name = 'Lochend')) as bus2
+on b.stop = bus2.stop1
+order by a.num, stopname, bus2.num;
 
